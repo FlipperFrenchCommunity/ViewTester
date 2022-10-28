@@ -1,4 +1,4 @@
-NAME = view_test
+NAME = view_tester
 
 FBT = ./fbt
 

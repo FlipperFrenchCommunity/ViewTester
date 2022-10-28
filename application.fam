@@ -1,10 +1,10 @@
 App(
-    appid="view_test",
-    name="Test View",
+    appid="view_tester",
+    name="View Tester",
     apptype=FlipperAppType.PLUGIN,
-    entry_point="view_test_app",
+    entry_point="view_tester_app",
     stack_size=1 * 1024,
-    cdefines=["VIEW_TEST"],
+    cdefines=["VIEW_TESTER"],
     requires=[
         "gui",
     ],

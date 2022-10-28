@@ -17,26 +17,26 @@ typedef struct {
 
     ViewPort* view_port;
     Gui* gui;
-} ViewTestState;
+} ViewTesterState;
 
 void draw_callback(Canvas* canvas, void* ctx){
     UNUSED(canvas);
-    ViewTestState* state = ctx;
+    ViewTesterState* state = ctx;
     furi_check(furi_mutex_acquire(state->model_mutex, 25) == FuriStatusOk);
 
     furi_mutex_release(state->model_mutex);
 }
 
 void input_callback(InputEvent* input, void* ctx){
-    ViewTestState* state = ctx;
+    ViewTesterState* state = ctx;
     furi_check(furi_mutex_acquire(state->model_mutex, 25) == FuriStatusOk);
     furi_message_queue_put(state->event_queue, input, FuriWaitForever);
     furi_mutex_release(state->model_mutex);
 }
 
 
-ViewTestState* view_test_alloc(){
-    ViewTestState* state = malloc(sizeof(ViewTestState));
+ViewTesterState* view_tester_alloc(){
+    ViewTesterState* state = malloc(sizeof(ViewTesterState));
 
     state->view_port = view_port_alloc();
     state->model_mutex = furi_mutex_alloc(FuriMutexTypeNormal);
@@ -51,7 +51,7 @@ ViewTestState* view_test_alloc(){
     return state;
 }
 
-void view_test_free(ViewTestState* state){
+void view_tester_free(ViewTesterState* state){
     view_port_enabled_set(state->view_port, false);
     gui_remove_view_port(state->gui, state->view_port);
     furi_record_close(RECORD_GUI);
@@ -63,10 +63,10 @@ void view_test_free(ViewTestState* state){
     free(state);
 }
 
-int32_t view_test_app(void* p){
+int32_t view_tester_app(void* p){
     UNUSED(p);
 
-    ViewTestState* state = view_test_alloc();
+    ViewTesterState* state = view_tester_alloc();
 
     InputEvent event;
     for(bool processing=true ; processing ; ){
@@ -93,6 +93,6 @@ int32_t view_test_app(void* p){
         view_port_update(state->view_port);
     }
 
-    view_test_free(state);
+    view_tester_free(state);
     return 0;
 }
