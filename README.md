@@ -1,8 +1,13 @@
 # Flipper Zero - Test des vues
 ## But
-Test les possibilité des vues.
+Approfondir le service **GUI** en découvrant les vues (*views*) et la méthode
+d'attachements avec **view_dispatcher**.
 
-## Termes
+## Présentation
+![view dispatcher](./assets/view_dispatcher.png)
+
+### Modules
+Liste de modules de vues:
 |submenu| Pour faire des sous-menu|
 |dialogue| Faire une fenêtre intempestive pour dialoguer avec l'utilisateur|
 
