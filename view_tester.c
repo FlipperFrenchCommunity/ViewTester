@@ -15,8 +15,6 @@
 #include <gui/view_dispatcher.h>
 
 typedef struct {
-    FuriMutex* model_mutex;
-
     Gui* gui;
     ViewDispatcher* view_dispatcher;    // Ajoute la structure d'état pour le dispatcher
     View* view;                         // Et la structure d'état pour la vue (courant?)
