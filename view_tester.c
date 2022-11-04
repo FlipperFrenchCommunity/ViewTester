@@ -23,8 +23,8 @@ typedef struct {
 
 
 static void view_dispatcher_view_draw_callback(Canvas* canvas, void* _model) {
-    UNUSED(canvas);
     UNUSED(_model);
+    canvas_draw_str(canvas, 5, 32, "H4ck the World! with Flipper");
 }
 
 static bool view_dispatcher_view_input_callback(InputEvent* event, void* context) {
