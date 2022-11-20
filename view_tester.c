@@ -7,6 +7,7 @@
  * Description: Décortiquer et apprendre à créer des vues et de les dispatcher.
  */
 #include <furi.h>
+#include <core/log.h>
 #include <gui/gui.h>
 #include <input/input.h>
 #include <stdlib.h>
@@ -14,10 +15,22 @@
 /* Ajouter l'en-tête pour view_dispatcher */
 #include <gui/view_dispatcher.h>
 
+
+#define TAG "ViewTester"
+
+
+typedef struct BoxMoverModel BoxMoverModel;
+struct BoxMoverModel{
+    int x;
+    int y;
+};
+
 typedef struct {
     Gui* gui;
     ViewDispatcher* view_dispatcher;    // Ajoute la structure d'état pour le dispatcher
     View* view;                         // Et la structure d'état pour la vue (courant?)
+
+    // BoxMoverModel * model;
 } ViewTesterState;
 
 /**
@@ -27,8 +40,12 @@ typedef struct {
  * @param       _model ??
  */
 static void view_dispatcher_view_draw_callback(Canvas* canvas, void* _model) {
-    UNUSED(_model);
-    canvas_draw_str(canvas, 5, 32, "H4ck the World! with Flipper");
+    FURI_LOG_D(TAG, _model);
+    BoxMoverModel * model = _model;
+    FURI_LOG_D(TAG, "Model x %d", model->x);
+    FURI_LOG_D(TAG, "Model y %d", model->y);
+    canvas_draw_box(canvas, model->x, model->y, 9, 9);
+    // canvas_draw_str(canvas, 5, 32, "H4ck the World! with Flipper");
 }
 
 /**
@@ -48,10 +65,11 @@ static uint32_t uart_echo_exit(void* context) {
  *
  * @return      Structure contenant l'état du programme
  */
-ViewTesterState* view_tester_alloc(){
+static ViewTesterState* view_tester_alloc(){
+    FURI_LOG_D(TAG, "Allouer le ressource");
+
     ViewTesterState* state = malloc(sizeof(ViewTesterState));
     state->gui = furi_record_open(RECORD_GUI);
-
 
     /*
      * Allouer les ressources pour faire fonctionner view_dispatcher et les initialiser.
@@ -70,6 +88,18 @@ ViewTesterState* view_tester_alloc(){
     /* Définir la fonction de rappel pour la bouton de retour. */
     view_set_previous_callback(state->view, uart_echo_exit);
 
+    view_allocate_model(state->view, ViewModelTypeLockFree, sizeof(BoxMoverModel));
+    // view_allocate_model(state->view, ViewModelTypeLocking, sizeof(BoxMoverModel));
+    with_view_model(
+        state->view,
+        BoxMoverModel * model,
+        {
+            model = malloc(sizeof(BoxMoverModel));
+            model->x = 50;
+            model->y = 50;
+        },
+        true);
+
     /* Ajouter la vue dans le dispatcher avec comme index 0 */
     view_dispatcher_add_view(state->view_dispatcher, 0, state->view);
     /* Transmettre à view_port pour afficher la vue 0 */
@@ -84,9 +114,10 @@ ViewTesterState* view_tester_alloc(){
  *
  * @param       State contenant l'état du programme
  */
-void view_tester_free(ViewTesterState* state){
+static void view_tester_free(ViewTesterState* state){
     /* Ne pas oublier de libérer les ressource crée précédemment */
     view_dispatcher_remove_view(state->view_dispatcher, 0);
+    // Free le model aussi <<<<<<<<<<-------------------------------------------------------------
     view_free(state->view);
     view_dispatcher_free(state->view_dispatcher);
 
